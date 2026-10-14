@@ -1,0 +1,8 @@
+{:paths ["src"]
+ :tasks {test {:doc "Run the test suite"
+               :extra-paths ["test"]
+               :requires ([clojure.test :as t])
+               :task (let [nses '[clojure-skill.guard-test clojure-skill.nrepl-test]]
+                       (apply require nses)
+                       (let [{:keys [fail error]} (apply t/run-tests nses)]
+                         (System/exit (if (pos? (+ fail error)) 1 0))))}}}
