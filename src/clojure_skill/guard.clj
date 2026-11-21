@@ -1,13 +1,13 @@
 (ns clojure-skill.guard
   "PostToolUse hook for Edit/Write: repairs unbalanced delimiters from
   indentation, then reports clj-kondo errors for the edited file."
-  (:require [babashka.deps :as deps]
-            [babashka.fs :as fs]
+  (:require [babashka.fs :as fs]
             [babashka.process :as process]
             [cheshire.core :as json]
             [clojure.edn :as edn]
             [clojure.string :as str]
-            [edamame.core :as edamame]))
+            [edamame.core :as edamame]
+            [parinferish.core :as parinferish]))
 
 (def max-changed-lines 8)
 
@@ -31,10 +31,7 @@
         (when (contains? data :edamame/opened-delimiter) data)))))
 
 (defn- infer-closers [text]
-  (deps/add-deps '{:deps {parinferish/parinferish {:mvn/version "0.8.0"}}})
-  (require 'parinferish.core)
-  ((resolve 'parinferish.core/flatten)
-   ((resolve 'parinferish.core/parse) text {:mode :indent})))
+  (parinferish/flatten (parinferish/parse text {:mode :indent})))
 
 (defn- changed-lines [before after]
   (->> (map vector (range 1 ##Inf) (str/split before #"\n" -1) (str/split after #"\n" -1))
