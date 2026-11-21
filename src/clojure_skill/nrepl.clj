@@ -93,8 +93,7 @@
        (some #(when (fs/exists? %) (parse-long (str/trim (slurp (str %))))))))
 
 (defn- within? [dir cwd]
-  (str/starts-with? (str (fs/normalize (fs/absolutize cwd)))
-                    (str (fs/normalize (fs/absolutize dir)))))
+  (fs/starts-with? (fs/canonicalize cwd) (fs/canonicalize dir)))
 
 (defn resolve-port
   "Port to use: given, else .nrepl-port in cwd or above, else the one server

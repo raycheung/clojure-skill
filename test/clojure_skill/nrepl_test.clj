@@ -76,6 +76,9 @@
           nested (fs/create-dirs (fs/path root "src" "a"))]
       (spit (str (fs/path root ".nrepl-port")) "4567\n")
       (is (= {:port 4567} (nrepl/resolve-port nil nested)))))
+  (testing "a sibling directory sharing the server's name as a prefix"
+    (let [sibling (fs/create-dirs (str *dir* "-sibling"))]
+      (is (:error (nrepl/resolve-port nil sibling)))))
   (testing "the one discovered server running from cwd or above"
     (let [nested (fs/create-dirs (fs/path *dir* "sub"))]
       (is (= {:port *port*} (nrepl/resolve-port nil nested))))))
