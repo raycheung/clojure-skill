@@ -64,6 +64,10 @@
     (is (= 2 exit))
     (is (str/includes? err "Timed out after 300 ms"))))
 
+(deftest a-timeout-covers-the-whole-evaluation-not-each-read
+  (let [{:keys [exit]} (run-eval "(dotimes [_ 30] (println :tick) (Thread/sleep 100))" :timeout 1000)]
+    (is (= 2 exit))))
+
 (deftest resolves-the-port
   (testing "an explicit port wins"
     (is (= {:port 1} (nrepl/resolve-port 1 *dir*))))

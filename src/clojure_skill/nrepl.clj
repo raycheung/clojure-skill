@@ -121,9 +121,13 @@
   [{:keys [port timeout new-session]} code]
   (let [conn (connect port timeout)
         sid (session conn port new-session)
-        id (str (random-uuid))]
+        id (str (random-uuid))
+        deadline (+ (System/currentTimeMillis) timeout)
+        on-reply (fn [reply]
+                   (print-reply reply)
+                   (.setSoTimeout ^Socket (:socket conn) (int (max 1 (- deadline (System/currentTimeMillis))))))]
     (try
-      (let [replies (request conn {"op" "eval" "code" code "session" sid "id" id} print-reply)]
+      (let [replies (request conn {"op" "eval" "code" code "session" sid "id" id} on-reply)]
         (if (some #(some #{"eval-error"} (:status %)) replies) 1 0))
       (catch SocketTimeoutException _
         (try
