@@ -25,6 +25,11 @@
 (deftest drops-a-stray-closer
   (is (= "(defn f [x]\n  (inc x))\n" (:text (guard/repair "(defn f [x]\n  (inc x)))\n")))))
 
+(deftest drops-a-stray-closer-on-its-own-line
+  (let [{:keys [text changed]} (guard/repair "(defn f [x]\n  (inc x))\n)\n")]
+    (is (= "(defn f [x]\n  (inc x))\n\n" text))
+    (is (= [[3 ""]] changed))))
+
 (deftest keeps-crlf-line-endings
   (is (= "(defn f [x]\r\n  (inc x))\r\n" (:text (guard/repair "(defn f [x]\r\n  (inc x)\r\n")))))
 

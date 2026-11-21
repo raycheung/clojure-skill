@@ -37,7 +37,7 @@
    ((resolve 'parinferish.core/parse) text {:mode :indent})))
 
 (defn- changed-lines [before after]
-  (->> (map vector (range 1 ##Inf) (str/split-lines before) (str/split-lines after))
+  (->> (map vector (range 1 ##Inf) (str/split before #"\n" -1) (str/split after #"\n" -1))
        (remove (fn [[_ a b]] (= a b)))
        (mapv (fn [[n _ b]] [n b]))))
 
